@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 
 const port = process.env.PORT || 5000;
@@ -26,9 +26,29 @@ async function run() {
     try {
 
         const mobileCollection = client.db('mobileDB').collection('mobiles');
+        const cartCollection = client.db('mobileDB').collection('cart');
 
         app.get('/mobiles' , async (req, res) => {
             const result = await mobileCollection.find().toArray();
+            res.send(result);
+        })
+
+        // cart api
+        app.post('/cart', async (req, res) => {
+            const data = req.body;
+            const result = await cartCollection.insertOne(data);
+            res.send(result);
+        })
+
+        app.get('/cart' , async (req, res) => {
+            const result = await cartCollection.find().toArray();
+            res.send(result);
+        })
+
+        app.delete('/cart/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await cartCollection.deleteOne(query);
             res.send(result);
         })
         
