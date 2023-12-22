@@ -24,6 +24,13 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+
+        const mobileCollection = client.db('mobileDB').collection('mobiles');
+
+        app.get('/mobiles' , async (req, res) => {
+            const result = await mobileCollection.find().toArray();
+            res.send(result);
+        })
         
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
